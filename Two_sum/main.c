@@ -1,6 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+typedef enum
+{
+    false,
+    true
+}BOOL_T;
 /**
  Target :
  Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
@@ -33,13 +38,16 @@ int compareInt(const void *var1, const void *var2)
 }
 
 
+/*
+// This Algorithm has 2 action 1. compare 2. swap
+// The Best result (Order Seqecnce) still have (n+1)*(n-1)/2 compare
 void BubbleSort(void *base, size_t n, size_t size, int (*compare)(const void *, const void *))
 {
     int idx1, idx2;
 
-    for (idx1 = n - 1; idx1 >= 0 ; idx1--) // Do n times
+    for (idx1 = n - 1; idx1 > 0 ; idx1--) // Do n-1 times
     {
-        for (idx2 = 0; idx2 < idx1; idx2++) // n-1
+        for (idx2 = 0; idx2 < idx1; idx2++) // divid inorder and order term
         {
             int swapFalg = compare((base + (idx2 * size)), (base + ((idx2 + 1) * size)));
 
@@ -48,6 +56,62 @@ void BubbleSort(void *base, size_t n, size_t size, int (*compare)(const void *, 
                 swap((base + (idx2 * size)), (base + ((idx2 + 1) * size)), size);
             }
         }
+    }
+}
+*/
+
+/*
+// This Algorithm reduce compare time when seqence is order seqence
+void BubbleSort(void *base, size_t n, size_t size, int (*compare)(const void*, const void *))
+{
+    BOOL_T inorderFlag = true;
+    n--;
+
+    while (inorderFlag)
+    {
+        inorderFlag = false;
+        int idx = 0;
+        for (idx = 0; idx < n; idx ++)
+        {
+            int swapFalg = compare((base + (idx * size)), (base + ((idx + 1) * size)));
+
+            if (swapFalg)
+            {
+                swap((base + (idx * size)), (base + ((idx + 1) * size)), size);
+                inorderFlag = true;
+            }
+
+        }
+
+    }
+
+}
+*/
+
+void BubbleSort(void *base, size_t n, size_t size, int (*compare)(const void *, const void *))
+{
+    int recordLastSwapIdx = n-1;
+    BOOL_T inorderFlag = true;
+
+    while (recordLastSwapIdx)
+    {
+        inorderFlag = false;
+        int idx = 0;
+        int everySwapIdx = 0;
+        for (idx = 0; idx < recordLastSwapIdx; idx++)
+        {
+            int swapFalg = compare((base + (idx * size)), (base + ((idx + 1) * size)));
+
+            if (swapFalg)
+            {
+                swap((base + (idx * size)), (base + ((idx + 1) * size)), size);
+                everySwapIdx = idx;
+                inorderFlag = true;
+            }
+
+        }
+        recordLastSwapIdx = everySwapIdx;
+
     }
 }
 
@@ -101,6 +165,8 @@ int main(void)
     {
         printf("%2d\n", nums[index]);
     }
+
+
     /* Test Compare function
 
     int comVal1 = 12, comVal2 = 11;
