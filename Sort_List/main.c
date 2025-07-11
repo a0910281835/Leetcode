@@ -477,6 +477,82 @@ unsigned int ParserUartFormat(unsigned char *pUartStartReg)
 }
 
 
+int findSquare(int val)
+{
+    //1 ..... 45
+    int left  = 0;
+    int right = 45;
+    int currentIdx;
+
+    while (left  != right)
+    {
+        currentIdx = (left + right) >> 1;
+        if ((currentIdx* currentIdx) > val)
+        {
+            right = currentIdx;
+        }
+        else if ((currentIdx* currentIdx) < val)
+        {
+            left = ++currentIdx;
+        }
+        else
+        {
+            return currentIdx;
+        }
+
+    }
+
+    return currentIdx;
+}
+
+#define REG_I2C_SLAVE_VOLTAGE 0x90004000
+#define iior(REG) (* ((volatile unsigned int *) (REG)))
+#define iiow(REG, val) (iior(REG) = (val))
+#define POS_I2C_SDA_VOL 7
+#define NOP_1MS
+
+int checkI2CBusForSDA(void)
+{
+    int count = 0;
+    while (!((iior(REG_I2C_SLAVE_VOLTAGE) >> 7) & 0x1))
+    {
+        NOP_1MS;
+        count++;
+        if (1000 == count) break;
+
+    }
+
+    return ((iior(REG_I2C_SLAVE_VOLTAGE) >> 7) & 0x1);
+}
+/**
+ *  * Definition for singly-linked list.
+ *   * struct ListNode {
+ *    *     int val;
+ *     *     struct ListNode *next;
+ *      * };
+ *       */
+struct ListNode* reverseList(struct ListNode* head)
+{
+    P_LIST_NODE_T pNewList = head;
+    P_LIST_NODE_T pTemp    = NULL;
+
+    //head    :5->4->3 //sigle list is FILO, then using two list can change direct.
+    //newhead : NULL
+    //temp ->4->3
+    //head->next = NewList 5->
+    //NewList = head;
+    //head = tmep;
+    while (NULL != head)
+    {
+        pTemp       = head->next;
+        head->next  = pNewList;
+        pNewList    = head;
+        head        = pTemp;
+    }
+
+    return pNewList;
+}
+
 int main(void)
 {
     const int num = 5;
