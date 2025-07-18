@@ -263,6 +263,7 @@ uint8_t read_uart_data(void)
     //     // 並且要確保讀取動作是「原子性」的
 }
 
+#if defined(_CIRCLE_FIFO)
 #define BUF_SIZE 8
 
 typedef struct
@@ -330,6 +331,7 @@ int cb_dequeue(CircularBuffer* cb, uint8_t* out)
 
     return ret;
 }
+#endif
 
 #define iior(REG)  (*((volatile unsigned int *) (REG)))
 #define iiow(REG, val) (iior(REG) = val)
@@ -484,14 +486,16 @@ int findSquare(int val)
     int right = 45;
     int currentIdx;
 
-    while (left  != right)
+    //find the val < idx^2
+    // (idx-1)^2 < val < (idx)^2
+    while (left != right)//left < rigth
     {
         currentIdx = (left + right) >> 1;
-        if ((currentIdx* currentIdx) > val)
+        if ((currentIdx * currentIdx) > val)
         {
-            right = currentIdx;
+            right = currentIdx;// as right > left then this term will be fast such as  2,3 => currentIdx = 2
         }
-        else if ((currentIdx* currentIdx) < val)
+        else if ((currentIdx * currentIdx) < val)
         {
             left = ++currentIdx;
         }
