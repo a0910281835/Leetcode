@@ -209,6 +209,72 @@ struct ListNode* sortList(struct ListNode* head)
     return head;
 }
 
+struct ListNode* reverseList(struct ListNode* head)
+{
+    P_LIST_NODE_T pNewList = NULL;
+    P_LIST_NODE_T pTemp    = NULL;
+
+    //head    :5->4->3 //sigle list is FILO, then using two list can change direct.
+    //newhead : NULL
+    //temp ->4->3
+    //head->next = NewList 5->
+    //NewList = head;
+    //head = tmep;
+    while (NULL != head)
+    {
+        pTemp       = head->next;
+        head->next  = pNewList;
+        pNewList    = head;
+        head        = pTemp;
+    }
+
+    return pNewList;
+}
+
+struct ListNode* reverseBetween(struct ListNode* head, int left, int right)
+{
+    P_LIST_NODE_T pLeft  = NULL;
+    P_LIST_NODE_T pRight = NULL;
+    P_LIST_NODE_T pDummy = malloc(sizeof(LIST_NODE_T));
+
+
+    pDummy->next = head;
+    head   = pDummy;
+    pLeft  = head;
+    pRight = head;
+
+    if (left != right)
+    {
+        // 1->2->3->4 //2,3
+        // 0->1->2->3->4
+        // 1 3->4
+        int idx =0;
+        for (idx = 1; idx <= right; idx++)
+        {
+            if (idx < left)  pLeft  = pLeft->next;
+
+            pRight = pRight->next;
+        }
+        pDummy = pRight;
+        pRight = pRight->next;
+        pDummy->next = NULL;
+
+        pDummy = pLeft->next;
+        pDummy = reverseList(pDummy);
+        pLeft->next = pDummy;
+        while(NULL != pDummy->next)
+        {
+            pDummy = pDummy->next;
+        }
+        pDummy->next = pRight;
+    }
+
+    pDummy = head;
+    head   = head->next;
+    free(pDummy);
+}
+
+
 int main(void)
 {
     const int num = 5;
@@ -224,6 +290,14 @@ int main(void)
     }
 
 
+    pNext = pHead;
+    printf("origin list : ");
+    printList(pHead);
+    pHead = reverseList(pHead);
+    printf("reverse list : ");
+    printList(pHead);
+
+#if defined _SORT
     pNext = pHead;
     printf("before sorting : ");
     printList(pHead);
@@ -242,11 +316,6 @@ int main(void)
     //    printf("%d->", pNext->val);
     //    pNext = pNext->next;
     //}
-
-
-
-
-
-
+#endif
    return 0;
 }
