@@ -557,6 +557,182 @@ struct ListNode* reverseList(struct ListNode* head)
     return pNewList;
 }
 
+#define SPECIAL_ADD 0x67a9
+#define iior(REG) (*((volatile unsigned int *)(REG)))
+#define iiow(REG, val) (iior(REG) = val)
+
+iiow(SPECIAL_ADD, 0xaa55);
+
+volatile unsigned int * p_Special_Addr = (volatile unsigned int *) (SPECAIL_ADD);
+*p_Special_Addr = 0xaa55;
+
+
+// find Idx form Array, suppose array is order sequence.
+int FindIdxFromArray(int *array, int leftIdx, int rightIdx, int val)
+{
+#if defined(_RECURSIVE_METHOD)
+    if (rightIdx >= leftIdx)
+    {
+        //first recursive
+        int mid = leftIdx+ ((rightIdx-leftIdx) >> 1);
+        if (array[mid] > val)
+        {
+            rightIdx = mid-1;
+            return FindIdxFromArray(array, leftIdx, rightIdx, val);
+        }
+        else if (array[mid] < val)
+        {
+            leftIdx = mid+1;
+            return FindIdxFromArray(array, leftIdx, rightIdx, val);
+        }
+        else
+        {
+            return mid;
+        }
+
+    }
+    else return -1;
+#else
+    while (leftIdx < rightIdx)
+    {
+        int mid = (rightIdx+leftIdx) >> 1;
+        if (array[mid] > val)
+        {
+            rightIdx = mid-1;
+        }
+        else if (array[mid] < val)
+        {
+            leftIdx = mid+1;
+        }
+        else
+        {
+            return mid;
+        }
+
+    }
+    return (val != array[leftIdx]) ? -1 : leftIdx;
+
+#endif
+}
+
+typedef struct
+{
+    int idx;
+    int val;
+}IDX_VAL_T;
+
+int Fibonacci(int n)
+{
+    //0 1 2 3 4
+    //1 1,2,3,5...
+    IDX_VAL_T zero, first, second;
+    zero.idx   = 0;
+    zero.val   = 1;
+    first.idx  = 1;
+    first.val  = 1;
+
+
+    IDX_VAL_T * pPrev = &zero;
+    IDX_VAL_T * pCurr = &first;
+    IDX_VAL_T * pNext = $second;
+
+    while (pNext->idx < n)
+    {
+        IDX_TVAL_T pTemp = pPrev;
+        pNext->idx = pCurr->idx + pPrev->idx;
+        pNext->val = pCurr->val + pPrev->val;
+        pPrev = pCurr;
+        pCurr = pNext;
+        pNext = pTemp;
+
+    }
+
+    if (1 == n | 0 == n) return 1;
+
+    return pNext->val;
+
+}
+typedef struct Node * P_NODE_T
+
+typedef struct Node
+{
+    int val;
+    P_NODE_T next;
+}NODE_T;
+
+Node* reverse_list(Node* head)
+{
+    P_NODE_T pNewList = NULL;
+    P_NODE_T pOldList = pHead;
+
+    while (NULL != pOldList)
+    {
+        P_NODE_T pTemp = pOldList->next;
+        pOldList->next = pNewList;
+        pNewList = pOldList;
+        pOldList = pTemp;
+    }
+
+    return pNewList;
+}
+
+Node* recusive_reverse_list(Node* head)
+{
+    if (NULL != head)
+    {
+        P_NODE_T pNode = head;
+        P_NODE_T pNext = head->next;
+        head->next = NULL;
+        P_NODE_T pNewList = recusive_reverse_list(pNext);
+
+        if (pNewList != NULL)
+        {
+            pNext = pNewList;
+            while (pNext->next != NULL)
+            {
+                pNext = pNext->next;
+            }
+            pNext->next = head;
+
+        }
+        else
+        {
+            pNewList = head;
+        }
+    }
+
+    return pNewList;
+
+}
+
+int has_cycle(Node* head)
+{
+    // using math to prove
+    // // if has cycle then cycle length = k.
+    // then when slow first enter cycle is 0 and fast is in m
+    // then N, 2N+m are same in the cycle N = 2N+m (mod k)
+    int ret = 0;
+    if (head != NULL)
+    {
+        P_NODE_T pFast  = (head->next != NULL) ? head->next->next : NULL;
+        P_NODE_T pSlow  = head;
+        while (pFast != NULL)
+        {
+            pFast = (pFast->next != NULL) ? pFast->next->next : NULL;
+            pSlow = pSLow->next;
+
+            // 3 condtion
+            if ((pFast == pSlow) | (pFast->next == pSlow) | (pSlow->next == pFast))
+            {
+                return 1;
+            }
+        }
+
+    }
+    return ret;
+}
+
+
 int main(void)
 {
     const int num = 5;
